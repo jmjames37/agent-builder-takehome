@@ -1,9 +1,9 @@
 """Modify workflow — change pickup/return time or return location.
 
 A return-location change adds a one-way fee and depends on availability of the
-vehicle class at the new location. Status: draft (client wired; depends on the
-`/availability` + `/quote` endpoints the brief flags as least reliable, so this
-needs the most error-path hardening before it ships).
+vehicle class at the new location. Status: stable (validated end to end — time
+change, location change with availability check + one-way fee, and
+VEHICLE_UNAVAILABLE surfacing alternatives without charging).
 """
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from agent_common import safe_call
 from avis_client import get_availability, get_quote, modify_reservation
 
 NAME = "modify"
-STATUS = "draft"
+STATUS = "stable"
 SUMMARY = "Change return time or return location on a reservation."
 
 
@@ -72,7 +72,7 @@ def modify_reservation_tool(
 TOOLS = [check_availability, quote_modification, modify_reservation_tool]
 
 INSTRUCTIONS = """\
-## Modifying a reservation (draft)
+## Modifying a reservation
 1. SCOPE — Clarify what's changing (return time and/or return location).
 2. AVAILABILITY — For a location change, call `check_availability` for the
    vehicle class at the new location first. If unavailable, offer the
