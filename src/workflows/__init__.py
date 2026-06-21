@@ -15,9 +15,9 @@ from . import cancel, extend, modify, upgrade
 # All available workflows, in the order their instructions are presented.
 REGISTRY = [cancel, extend, modify, upgrade]
 
-# Workflows the running agent actually exposes. Cancel is validated; the others
-# are wired and ready to enable once their conversation flow is validated.
-ENABLED = [cancel]
+# Workflows the running agent actually exposes. Cancel is validated; extend is
+# enabled here for live validation alongside it.
+ENABLED = [cancel, extend]
 
 
 def collect_tools(workflows=None):
