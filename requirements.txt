@@ -7,7 +7,9 @@ openai>=1.40
 python-dotenv>=1.0
 requests>=2.31
 
-# For RAG, add a vector store / embeddings library of your choosing, e.g.:
-#   chromadb        (simple local vector DB)
-#   faiss-cpu       (in-memory similarity search)
-#   numpy           (roll your own cosine similarity)
+# Lets the Agents SDK (which uses 3.10+ `X | None` syntax) import on Python 3.9.
+# Harmless on 3.10+; remove if you're on a clean 3.10+ environment.
+eval_type_backport>=0.2
+
+# RAG here is pure-Python keyword/TF-IDF over ~30 short articles (see src/rag.py),
+# so no vector store / embeddings dependency is needed.
