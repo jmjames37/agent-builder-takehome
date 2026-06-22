@@ -21,7 +21,7 @@ close) that the other workflows reuse.
 | cancel | **stable** | Enabled; validated against the live API. |
 | extend | draft | Client + tools wired and live-tested; quote-before-charge flow drafted. |
 | modify | draft | Client + tools wired; depends on the less-reliable `/availability`. |
-| upgrade | draft | Client + tools wired; eligibility-gated outcomes handled. |
+| upgrade | **stable** | Client + tools wired; eligibility-gated outcomes handled. |
 
 Enable a draft workflow by adding its module to `ENABLED` in
 [`src/workflows/__init__.py`](src/workflows/__init__.py) — the agent picks up its
