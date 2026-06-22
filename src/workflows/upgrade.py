@@ -36,7 +36,9 @@ TOOLS = [upgrade_customer_tool]
 INSTRUCTIONS = """\
 ## Upgrading to Avis Preferred (draft)
 1. CONTEXT — Look up the reservation to get `customer_id` and current
-   `membership_status`. If already `avis_preferred`, say so and stop.
+   `membership_status`. If `membership_status` is already `avis_preferred`, tell
+   them in one short sentence that they're already an Avis Preferred member and
+   no upgrade is needed — do NOT ask for their email and do NOT call any tool.
 2. INFORM — Explain that membership upgrades are eligibility-based (rental
    history); use `search_knowledge_base` for the benefits and eligibility policy.
    This is membership status, not a vehicle-class upgrade.

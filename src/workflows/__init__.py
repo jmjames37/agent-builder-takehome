@@ -15,9 +15,10 @@ from . import cancel, extend, modify, upgrade
 # All available workflows, in the order their instructions are presented.
 REGISTRY = [cancel, extend, modify, upgrade]
 
-# Workflows the running agent actually exposes. Cancel is validated; modify is
-# enabled here for live validation alongside it.
-ENABLED = [cancel, modify]
+# Workflows the running agent actually exposes. cancel and upgrade are stable;
+# extend and modify are merged but Work In Progress (see PRs) — enabled for
+# integration, gated for production.
+ENABLED = [cancel, upgrade, extend, modify]
 
 
 def collect_tools(workflows=None):

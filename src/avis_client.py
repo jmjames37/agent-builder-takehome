@@ -71,7 +71,13 @@ def _retry(fn, *, label: str, max_attempts: int = MAX_ATTEMPTS):
             return fn()
         except Exception as exc:  # noqa: BLE001 - re-raised below if not retryable
             if not _retryable(exc) or attempt == max_attempts:
-                log.error("%s failed on attempt %d/%d: %s", label, attempt, max_attempts, exc)
+                resp = getattr(exc, "response", None)
+                if resp is not None and resp.status_code < 500:
+                    # Deterministic 4xx (e.g. NOT_ELIGIBLE, VERIFICATION_FAILED):
+                    # an expected outcome the caller handles, not a failure.
+                    log.info("%s returned %d (not retried)", label, resp.status_code)
+                else:
+                    log.error("%s failed on attempt %d/%d: %s", label, attempt, max_attempts, exc)
                 raise
             backoff = 0.5 * (2 ** (attempt - 1))
             delay = backoff * (1 + random.random() * 0.5)

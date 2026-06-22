@@ -1,8 +1,8 @@
 """Extend workflow — push a rental's return date/time out.
 
 Quote-before-charge: always show cost before collecting payment. Requires email
-+ CVV + billing ZIP. Status: draft (plumbing wired and live-tested at the client
-layer; conversation flow not yet validated end to end).
++ CVV + billing ZIP. Status: stable (validated end to end — happy path,
+verification 2-strike escalation, and Preferred late-fee exemption).
 """
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from agent_common import safe_call
 from avis_client import extend_reservation, get_quote
 
 NAME = "extend"
-STATUS = "draft"
+STATUS = "stable"
 SUMMARY = "Extend a rental to a later return date/time."
 
 
@@ -48,7 +48,7 @@ def extend_reservation_tool(
 TOOLS = [quote_extension, extend_reservation_tool]
 
 INSTRUCTIONS = """\
-## Extending a reservation (draft)
+## Extending a reservation
 1. QUOTE — Get the new return date/time, call `quote_extension`, and show the
    total cost (extension days, taxes/fees). Never charge without showing cost.
 2. VERIFY + PAYMENT — Collect the email on file plus CVV and billing ZIP for the
