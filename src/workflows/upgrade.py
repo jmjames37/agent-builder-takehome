@@ -2,8 +2,8 @@
 
 Eligibility-gated: NOT_ELIGIBLE and ALREADY_PREFERRED are common, expected
 outcomes the agent must explain gracefully. Needs `customer_id` from the
-reservation lookup. Status: draft (client wired; conversation flow not yet
-validated end to end).
+reservation lookup. Status: stable (client wired; conversation flow validated
+end to end).
 """
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from agent_common import safe_call
 from avis_client import upgrade_customer
 
 NAME = "upgrade"
-STATUS = "draft"
+STATUS = "stable"
 SUMMARY = "Upgrade a customer to Avis Preferred membership."
 
 
@@ -35,7 +35,7 @@ def upgrade_customer_tool(customer_id: str, email: str) -> dict:
 TOOLS = [upgrade_customer_tool]
 
 INSTRUCTIONS = """\
-## Upgrading to Avis Preferred (draft)
+## Upgrading to Avis Preferred
 1. CONTEXT — Look up the reservation to get `customer_id` and current
    `membership_status`. If `membership_status` is already `avis_preferred`, tell
    them in one short sentence that they're already an Avis Preferred member and
