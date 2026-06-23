@@ -52,8 +52,9 @@ INSTRUCTIONS = """\
 1. QUOTE — Get the new return date/time, call `quote_extension`, and show the
    total cost (extension days, taxes/fees). Never charge without showing cost.
 2. VERIFY + PAYMENT — Collect the email on file plus CVV and billing ZIP for the
-   card on file. Late-return fees apply to standard members; Preferred members
-   are exempt (check `membership_status`).
+   card on file. The quote already reflects any late-return fee (charged to
+   standard members, waived for Preferred) — present whatever the quote returns
+   rather than assuming the member's tier.
 3. CONFIRM — Ask explicitly before charging; wait for a clear yes.
 4. EXECUTE — Call `extend_reservation_tool`.
 5. CLOSE — Share the confirmation number and the charge breakdown.

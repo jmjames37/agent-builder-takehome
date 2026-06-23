@@ -80,19 +80,51 @@ def reservation_timing(reservation: dict) -> dict:
     }
 
 
+def public_view(reservation: dict) -> dict:
+    """Minimal, pre-verification-safe projection of a reservation.
+
+    The customer is only identity-verified at the moment of a write (the API has
+    no verify-before-read), so the lookup must NOT hand the model account PII it
+    could disclose to anyone who merely knows the reservation ID. We surface only
+    what's needed to confirm the reservation exists and drive the conversation;
+    **customer name, membership tier, and card details are withheld** until a
+    write verifies the email. Post-write specifics come back in the write
+    response. `customer_id` is kept because the upgrade tool needs it — it's an
+    opaque internal id the agent passes to a tool, not something it says aloud.
+    """
+    vehicle = reservation.get("vehicle", {})
+    pickup = reservation.get("pickup_location", {})
+    ret = reservation.get("return_location", {})
+    pricing = reservation.get("pricing", {})
+    return {
+        "reservation_id": reservation.get("reservation_id"),
+        "status": reservation.get("status"),
+        "customer_id": reservation.get("customer_id"),
+        "vehicle": {"type": vehicle.get("type"), "description": vehicle.get("description")},
+        "pickup_location": {"code": pickup.get("code"), "name": pickup.get("name")},
+        "return_location": {"code": ret.get("code"), "name": ret.get("name")},
+        "dates": reservation.get("dates", {}),
+        "pricing": {"daily_rate": pricing.get("daily_rate"), "currency": pricing.get("currency")},
+        "timing": reservation_timing(reservation),
+    }
+
+
 # --- Shared tools ---------------------------------------------------------
 @function_tool
 def lookup_reservation(reservation_id: str) -> dict:
     """Look up an Avis reservation by its ID (e.g. 'AVS-29471835').
 
-    Returns reservation details plus a derived `timing` block (hours until pickup
-    and the 48-hour window) to support policy explanations. On failure returns a
-    structured error dict with `code` (e.g. RESERVATION_NOT_FOUND).
+    Returns a minimal, pre-verification-safe view: reservation id, status,
+    vehicle class, locations, dates, daily rate, and a derived `timing` block —
+    enough to confirm the reservation exists and drive the conversation. Customer
+    name, membership tier, and card details are intentionally NOT returned and
+    must not be discussed until the customer is verified by a write. On failure
+    returns a structured error dict with `code` (e.g. RESERVATION_NOT_FOUND).
     """
     result = safe_call(lambda: get_reservation(reservation_id), label=f"lookup_reservation({reservation_id})")
-    if not is_error(result):
-        result["timing"] = reservation_timing(result)
-    return result
+    if is_error(result):
+        return result
+    return public_view(result)
 
 
 @function_tool

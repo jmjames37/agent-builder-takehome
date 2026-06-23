@@ -29,11 +29,20 @@ from agent_common import SHARED_TOOLS  # noqa: E402
 # Logging: stdout + agent.log in the repo root.
 # ---------------------------------------------------------------------------
 _LOG_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "agent.log")
+# Full INFO detail goes to agent.log; the console stays clean (warnings/errors
+# only) so interactive sessions aren't buried in request/turn noise.
+_file_handler = logging.FileHandler(_LOG_PATH)
+_file_handler.setLevel(logging.INFO)
+_console_handler = logging.StreamHandler()
+_console_handler.setLevel(logging.WARNING)
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(name)s %(message)s",
-    handlers=[logging.FileHandler(_LOG_PATH), logging.StreamHandler()],
+    handlers=[_file_handler, _console_handler],
 )
+# Keep third-party request chatter out of both the console and agent.log.
+for _noisy in ("httpx", "openai", "openai._base_client", "openai.agents"):
+    logging.getLogger(_noisy).setLevel(logging.WARNING)
 log = logging.getLogger("avis.agent")
 
 BASE_INSTRUCTIONS = """\
