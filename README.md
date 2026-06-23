@@ -67,14 +67,26 @@ python src/rag.py            # smoke-test knowledge-base retrieval
 
 ### Conversation flow
 
-1. **Identify** — ask for the reservation ID, call `lookup_reservation`.
+Both focus workflows (**cancel** and **upgrade**) share the same shape; the
+Inform/Execute/Close steps specialize per workflow.
+
+1. **Identify** — ask for the reservation ID, call `lookup_reservation` (upgrade
+   also reads `customer_id` and `membership_status` from the result).
 2. **Verify** — ask for the email on file (the agent never hints at it).
-3. **Inform** — pull cancellation policy from the KB and explain the penalty
-   that applies, using a derived `cancellation_timing` block (hours-until-pickup
-   and the 48-hour window) computed in code, not by the LLM.
+3. **Inform** — pull the relevant policy from the KB and set expectations.
+   - *Cancel:* explain the penalty that applies, using a derived
+     `cancellation_timing` block (hours-until-pickup and the 48-hour window)
+     computed in code, not by the LLM.
+   - *Upgrade:* explain that Preferred is eligibility-based (rental history),
+     not a vehicle-class change; if already Preferred, say so and stop.
 4. **Confirm** — explicit "do you want to proceed?" before any write.
-5. **Execute** — `cancel_reservation_tool` with a fresh idempotency key.
-6. **Close** — confirmation number, penalty, refund amount, 5–10 day timeline.
+5. **Execute** — call the workflow's write tool (`cancel_reservation_tool` or
+   `upgrade_customer_tool`) with a fresh idempotency key.
+6. **Close** — report the outcome.
+   - *Cancel:* confirmation number, penalty, refund amount, 5–10 day timeline.
+   - *Upgrade:* on success, new Preferred status and benefits; on
+     `NOT_ELIGIBLE` / `ALREADY_PREFERRED` / `CUSTOMER_NOT_FOUND`, explain the
+     outcome kindly.
 
 ### Error handling
 
