@@ -23,7 +23,8 @@ def upgrade_customer_tool(customer_id: str, email: str) -> dict:
 
     Get `customer_id` from the reservation lookup. `email` is the verification
     value. Returns `new_membership_status` on success, or a structured error dict
-    — notably ALREADY_PREFERRED, NOT_ELIGIBLE, or VERIFICATION_FAILED.
+    — notably ALREADY_PREFERRED, NOT_ELIGIBLE, VERIFICATION_FAILED, or
+    CUSTOMER_NOT_FOUND.
     """
     return safe_call(
         lambda: upgrade_customer(customer_id, email),
@@ -46,5 +47,8 @@ INSTRUCTIONS = """\
 4. EXECUTE — Call `upgrade_customer_tool`.
 5. CLOSE — On success, confirm the new Preferred status and benefits. On
    NOT_ELIGIBLE, explain kindly that continued rental activity builds
-   eligibility; on ALREADY_PREFERRED, confirm they already have it.
+   eligibility; on ALREADY_PREFERRED, confirm they already have it. On
+   CUSTOMER_NOT_FOUND, the customer record behind this reservation couldn't be
+   located: ask them to re-check the reservation ID, and if it still fails after
+   a fresh lookup, apologize and direct them to call Avis at 1-800-352-7900.
 """
