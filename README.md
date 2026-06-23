@@ -97,15 +97,18 @@ python src/rag.py            # smoke-test knowledge-base retrieval
 Both focus workflows (**cancel** and **upgrade**) share the same shape; the
 Inform/Execute/Close steps specialize per workflow.
 
-1. **Identify**: ask for the reservation ID, call `lookup_reservation` (upgrade
-   also reads `customer_id` and `membership_status` from the result).
+1. **Identify**: ask for the reservation ID, call `lookup_reservation`, which
+   returns a minimal pre-verification view (no customer name, membership tier, or
+   card details). Upgrade reads `customer_id` from it for the upgrade call.
 2. **Verify**: ask for the email on file (the agent never hints at it).
 3. **Inform**: pull the relevant policy from the KB and set expectations.
    - *Cancel:* explain the penalty that applies, using a derived
      `cancellation_timing` block (hours-until-pickup and the 48-hour window)
      computed in code, not by the LLM.
    - *Upgrade:* explain that Preferred is eligibility-based (rental history),
-     not a vehicle-class change; if already Preferred, say so and stop.
+     not a vehicle-class change. Membership tier isn't known before
+     verification, so an already-Preferred customer is told only after they
+     verify (the upgrade call returns `ALREADY_PREFERRED`).
 4. **Confirm**: explicit "do you want to proceed?" before any write.
 5. **Execute**: call the workflow's write tool (`cancel_reservation_tool` or
    `upgrade_customer_tool`) with a fresh idempotency key.
@@ -131,8 +134,9 @@ natural language:
 ## Logging
 
 All API calls (endpoint, reservation ID, idempotency key, response status) and
-every user/agent turn are logged to **`agent.log`** in the repo root and to
-stdout.
+every user/agent turn are logged at INFO to **`agent.log`** in the repo root.
+The console shows only warnings/errors so interactive sessions stay readable;
+full detail lives in `agent.log`.
 
 ## Test accounts
 

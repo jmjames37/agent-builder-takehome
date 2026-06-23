@@ -81,7 +81,10 @@ def _retry(fn, *, label: str, max_attempts: int = MAX_ATTEMPTS):
                 raise
             backoff = 0.5 * (2 ** (attempt - 1))
             delay = backoff * (1 + random.random() * 0.5)
-            log.warning(
+            # Routine, self-healing transient (e.g. a 503 that the retry recovers)
+            # — log at INFO so it lands in agent.log without cluttering the
+            # console, which stays reserved for genuine failures (ERROR).
+            log.info(
                 "%s transient error on attempt %d/%d (%s); retrying in %.2fs",
                 label, attempt, max_attempts, exc, delay,
             )
