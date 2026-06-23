@@ -4,9 +4,10 @@ An AI agent that services Avis Budget Group reservations against the mock API,
 built on the OpenAI Agents SDK. The repo is structured as a **workflow registry**:
 shared plumbing (API client, RAG, verification, error handling) plus one module
 per workflow. **Cancel** and **upgrade** are the two workflows I focused on,
-built out and validated against the live API. **Extend** and **modify** are
-drafts: the client and tools are wired, but I haven't fully built out or tested
-their conversation flows, so they're left as draft modules.
+built out and validated against the live API. **Extend** and **modify** are also
+enabled and runnable, but I treat them as drafts: the client and tools are wired,
+yet I haven't fully built out or tested their conversation flows, so they're not
+production-ready.
 
 ## Why Cancel first
 
@@ -20,18 +21,21 @@ close) that the other workflows reuse.
 | Workflow | Status | Notes |
 |---|---|---|
 | cancel | **stable** | Enabled; validated against the live API. |
-| extend | draft | Client + tools wired, but the conversation flow isn't fully built out or tested. |
-| modify | draft | Client + tools wired, but not fully built out or tested; also depends on the less-reliable `/availability`. |
+| extend | draft | Enabled and runnable, but the conversation flow isn't fully built out or tested. |
+| modify | draft | Enabled and runnable, but not fully built out or tested; also depends on the less-reliable `/availability`. |
 | upgrade | **stable** | Client + tools wired; eligibility-gated outcomes handled. |
 
-Enable a draft workflow by adding its module to `ENABLED` in
-[`src/workflows/__init__.py`](src/workflows/__init__.py). The agent picks up its
-tools and instructions automatically.
+All four workflows are currently registered in `ENABLED` in
+[`src/workflows/__init__.py`](src/workflows/__init__.py), so the live agent can
+run any of them. `STATUS` is just a maturity label (stable vs draft), not a
+switch: drop a module from `ENABLED` to take it offline.
 
-## What I left out (extend & modify) and why
+## Where I focused, and why extend & modify stay draft
 
-I deliberately left **extend** and **modify** as untested drafts rather than ship
-them. Both move money and carry risks I don't think an agent should own yet:
+I focused on **cancel** and **upgrade**. **Extend** and **modify** are wired and
+enabled so you can exercise them, but I deliberately did not invest in making
+them production-ready. Both move money and carry risks I don't think an agent
+should own yet:
 
 - **Payment data in the wrong places.** They need CVV and billing ZIP, which
   arrive as conversation text, flowing into model context and logs. That's a
@@ -46,9 +50,10 @@ them. Both move money and carry risks I don't think an agent should own yet:
   most.
 
 **Cancel** and **upgrade** avoid this: each is in and out in two calls, with no
-payment details and no real conflict window. Extend and modify open a window
-that's hard to close without coordination infrastructure that doesn't exist yet,
-so I'd keep them with human agents for now.
+payment details and no real conflict window, which is why I built and validated
+those two. Extend and modify open a window that's hard to close without
+coordination infrastructure that doesn't exist yet, so I'd want a human in the
+loop before trusting them in production.
 
 ## Setup
 
