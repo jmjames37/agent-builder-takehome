@@ -76,8 +76,18 @@ Required in `.env`:
 
 ## Run
 
+**To run the workflows, use `python src/agent.py`** — this is the interactive
+agent. It greets you, asks for a reservation ID, and you chat back and forth;
+type `quit` or `exit` to leave.
+
 ```bash
-python src/agent.py          # interactive cancellation session
+python src/agent.py          # interactive agent — run the workflows here
+```
+
+Other entry points:
+
+```bash
+python src/test_workflows.py # interactive menu of scripted test scenarios
 python src/avis_client.py    # smoke-test API connectivity
 python src/rag.py            # smoke-test knowledge-base retrieval
 ```
