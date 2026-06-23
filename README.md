@@ -3,9 +3,10 @@
 An AI agent that services Avis Budget Group reservations against the mock API,
 built on the OpenAI Agents SDK. The repo is structured as a **workflow registry**:
 shared plumbing (API client, RAG, verification, error handling) plus one module
-per workflow. **Cancel** is fully built and validated; **extend / modify /
-upgrade** are wired end to end at the client layer and scaffolded as draft
-workflow modules ready to enable.
+per workflow. **Cancel** and **upgrade** are the two workflows I focused on —
+built out and validated against the live API. **Extend** and **modify** are
+drafts: the client and tools are wired, but I haven't fully built out or tested
+their conversation flows, so they're left as draft modules.
 
 ## Why Cancel first
 
@@ -19,8 +20,8 @@ close) that the other workflows reuse.
 | Workflow | Status | Notes |
 |---|---|---|
 | cancel | **stable** | Enabled; validated against the live API. |
-| extend | draft | Client + tools wired and live-tested; quote-before-charge flow drafted. |
-| modify | draft | Client + tools wired; depends on the less-reliable `/availability`. |
+| extend | draft | Client + tools wired, but the conversation flow isn't fully built out or tested. |
+| modify | draft | Client + tools wired, but not fully built out or tested; also depends on the less-reliable `/availability`. |
 | upgrade | **stable** | Client + tools wired; eligibility-gated outcomes handled. |
 
 Enable a draft workflow by adding its module to `ENABLED` in
