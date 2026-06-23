@@ -105,6 +105,3 @@ stdout.
 | `AVS-66002030` | `david.kim@example.com` |
 | `AVS-50000001` | `robert.chen@example.com` |
 | `AVS-99004050` | `tomas.rivera@example.com` |
-
-Writes are ephemeral on the mock — cancelling does not persist, so you can test
-freely.
